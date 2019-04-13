@@ -62,3 +62,32 @@ document.querySelector('#flashing').addEventListener('click', changeColor);
 document.querySelector('#pulse').addEventListener('click', changeColor);
 document.querySelector('#rainbow').addEventListener('click', changeColor);
 document.querySelector('#rainbowFade').addEventListener('click', changeColor);
+
+document.querySelector('#connect').addEventListener('click', event => {
+  playbulbCandle.connect()
+  .then(() => {
+    console.log(playbulbCandle.device);
+    document.querySelector('#state').classList.remove('connecting');
+    document.querySelector('#state').classList.add('connected');
+    return playbulbCandle.getDeviceName().then(handleDeviceName)
+    .then(() => playbulbCandle.getBatteryLevel().then(handleBatteryLevel));
+  })
+  .catch(error => {
+    console.error('Argh!', error);
+  });
+});
+
+function handleDeviceName(deviceName) {
+  document.querySelector('#deviceName').value = deviceName;
+}
+
+function handleBatteryLevel(batteryLevel) {
+  document.querySelector('#batteryLevel').textContent = batteryLevel + '%';
+}
+
+function changeColor() {
+  var effect = document.querySelector('[name="effectSwitch"]:checked').id;
+  if (effect === 'noEffect') {
+    playbulbCandle.setColor(r, g, b).then(onColorChanged);
+  }
+}
